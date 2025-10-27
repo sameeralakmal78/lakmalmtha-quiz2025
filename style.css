@@ -603,4 +603,62 @@ button:hover {
     .contact-info p {
         font-size: 1rem;
     }
+
+}
+/* ==================== ADMIN BUTTON STYLES ==================== */
+
+.btn-secondary {
+    background: #718096;
+    color: white;
+}
+
+.btn-download {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-import {
+    background: #ed8936;
+    color: white;
+}
+
+.btn-delete {
+    background: #e53e3e;
+    color: white;
+}
+
+.admin-actions button {
+    margin: 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.admin-actions button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Responsive styles for admin buttons */
+@media (max-width: 768px) {
+    .admin-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .admin-actions button {
+        width: 100%;
+        margin: 2px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-actions button {
+        padding: 12px 10px;
+        font-size: 13px;
+    }
 }
