@@ -617,4 +617,29 @@ function exportAllResults() {
     
     alert(`සියලු ප්‍රතිඵල ${uniqueResults.length}ක් බාගත කෙරිණි!`);
 }
+// Load results from Google Sheets (සියලු devices වල ප්‍රතිඵල)
+async function loadResults() {
+    console.log('Loading results from Google Sheets...');
+    
+    const resultsBody = document.getElementById('results-body');
+    if (!resultsBody) return;
+    
+    resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">ප්‍රතිඵල ලබාගනිමින්...</td></tr>';
+    
+    try {
+        // Load from Google Sheets (සියලු devices වල ප්‍රතිඵල)
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const results = await response.json();
+        
+        console.log('Results from all devices:', results);
+        displayResultsInTable(results, resultsBody);
+        
+    } catch (error) {
+        console.error('Failed to load from Google Sheets:', error);
+        // Fallback to localStorage
+        const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+        displayResultsInTable(results, resultsBody);
+    }
+}
+
 
