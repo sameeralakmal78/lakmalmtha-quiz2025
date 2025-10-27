@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ගණිත ප්‍රශ්නෝත්තරය</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="name-screen" class="screen">
+            <div class="login-box">
+                <h1>ගණිත ප්‍රශ්නෝත්තරය</h1>
+                <div class="input-group">
+                    <label for="studentName">ඔබගේ නම ඇතුලත් කරන්න:</label>
+                    <input type="text" id="studentName" placeholder="උදා: Lakmal" required>
+                </div>
+                <div class="input-group">
+                    <label for="schoolName">ඔබගේ පාසලේ නම ඇතුලත් කරන්න:</label>
+                    <input type="text" id="schoolName" placeholder="උදා: Kubukgete central college" required>
+                </div>
+                <div class="input-group">
+                    <label for="studentGrade">ශ්‍රේණිය තෝරන්න:</label>
+                    <select id="studentGrade" required>
+                        <option value="">ශ්‍රේණිය තෝරන්න</option>
+                        <option value="10">10 ශ්‍රේණිය</option>
+                        <option value="11">11 ශ්‍රේණිය</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="accessCode">Admin කෝඩ් එක ඇතුලත් කරන්න:</label>
+                    <input type="password" id="accessCode" placeholder="Admin කෝඩ් එක" required>
+                </div>
+                <button onclick="startQuiz()">ප්‍රශ්නෝත්තරය අරඹන්න</button>
+                <div class="admin-link">
+                    <a href="admin.html">පරිපාලක ඇතුල් වීම</a>
+                </div>
+                <p id="code-message" class="message"></p>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="screen hidden">
+            <div class="quiz-container">
+                <div class="quiz-header">
+                    <h2>ගණිත ප්‍රශ්නෝත්තරය</h2>
+                    <div class="student-info" id="student-info"></div>
+                    <div class="timers">
+                        <div id="total-timer">මුළු කාලය: 60:00</div>
+                        <div id="question-timer">ප්‍රශ්නය: 03:00</div>
+                    </div>
+                </div>
+                <div class="question-section">
+                    <div id="question-number">ප්‍රශ්නය 1/20</div>
+                    <div id="question-text"></div>
+                    <div id="question-image" class="question-image"></div>
+                    <div id="answer-section" class="answer-section"></div>
+                </div>
+                <div class="quiz-footer">
+                    <button id="next-btn" class="btn-primary">මීළඟ ප්‍රශ්නය</button>
+                    <div id="progress">ප්‍රගතිය: 0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen hidden">
+            <div class="result-container">
+                <h2>ප්‍රශ්නෝත්තරය අවසන්!</h2>
+                <div id="student-result" class="student-result"></div>
+                <div id="score-display">ඔබගේ ලකුණු: <span id="score">0</span>/20</div>
+                <div id="time-taken">ප්‍රශ්නෝත්තරය සඳහා ගතවූ කාලය: <span id="time">00:00</span></div>
+                <div class="contact-info-result">
+                    <h3>තවත් ප්‍රශ්නෝත්තර සඳහා</h3>
+                    <p><strong>දුරකථන අංකය:</strong> <a href="tel:0778482237" class="contact-link">077 848 2237</a></p>
+                    <p><strong>WhatsApp Group:</strong> 
+                        <a href="https://chat.whatsapp.com/FqsVqqwb00b627Xj4adrW2" target="_blank" class="whatsapp-link">
+                            📱 අපගේ WhatsApp Group එකට සම්බන්ධ වන්න
+                        </a>
+                    </p>
+                </div>
+                <button onclick="restartQuiz()">නැවත ආරම්භ කරන්න</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
