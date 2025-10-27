@@ -504,4 +504,130 @@ window.addEventListener('beforeunload', function (e) {
         e.preventDefault();
         e.returnValue = 'ඔබ ප්‍රශ්නෝත්තරයෙන් පිටවෙමින් පවතී. ඔබගේ ප්‍රගතිය අහිමි වනු ඇත!';
     }
+
+});
+// ==================== ENHANCED STORAGE SOLUTION ====================
+
+// localStorage support check
+function isLocalStorageSupported() {
+    try {
+        const test = 'test';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch (e) {
+        console.error('localStorage not supported:', e);
+        return false;
+    }
+}
+
+// Temporary in-memory storage (page refresh වලදී අහිමි වේ)
+let temporaryResults = [];
+
+// Enhanced saveResults function - REPLACE the existing saveResults function
+function saveResults(studentName, schoolName, studentGrade, score, totalQuestions, timeTaken) {
+    const newResult = {
+        studentName: studentName,
+        schoolName: schoolName,
+        studentGrade: studentGrade,
+        score: score,
+        totalQuestions: totalQuestions,
+        timeTaken: timeTaken,
+        date: new Date().toLocaleString('si-LK')
+    };
+    
+    console.log('Saving results for:', studentName, schoolName, studentGrade);
+    
+    // Try localStorage first
+    if (isLocalStorageSupported()) {
+        try {
+            const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+            results.push(newResult);
+            localStorage.setItem('quizResults', JSON.stringify(results));
+            console.log('Results saved to localStorage');
+        } catch (error) {
+            console.warn('localStorage failed, using temporary storage');
+            temporaryResults.push(newResult);
+        }
+    } else {
+        console.warn('localStorage not supported, using temporary storage');
+        temporaryResults.push(newResult);
+    }
+    
+    // Debug: Check what's stored
+    console.log('Current temporaryResults:', temporaryResults);
+}
+
+// Enhanced loadResults function for admin page - ADD this to admin.js as well
+function loadResults() {
+    let results = [];
+    
+    console.log('Loading results...');
+    
+    // Try localStorage first
+    if (isLocalStorageSupported()) {
+        try {
+            results = JSON.parse(localStorage.getItem('quizResults')) || [];
+            console.log('Results loaded from localStorage:', results.length);
+        } catch (error) {
+            console.warn('localStorage load failed, using temporary storage');
+            results = temporaryResults;
+        }
+    } else {
+        console.warn('localStorage not supported, using temporary storage');
+        results = temporaryResults;
+    }
+    
+    const resultsBody = document.getElementById('results-body');
+    if (!resultsBody) {
+        console.error('results-body element not found');
+        return;
+    }
+    
+    resultsBody.innerHTML = '';
+    
+    if (results.length === 0) {
+        resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">ප්‍රතිඵල නොමැත</td></tr>';
+        console.log('No results found');
+        return;
+    }
+    
+    console.log('Displaying results:', results);
+    
+    // Display results
+    results.forEach((result, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${result.studentName || 'නොමැත'}</td>
+            <td>${result.schoolName || 'නොමැත'}</td>
+            <td>${result.studentGrade || 'නොමැත'}</td>
+            <td>${result.score}/${result.totalQuestions || 20}</td>
+            <td>${result.timeTaken || '00:00'}</td>
+            <td>${result.date || 'නොමැත'}</td>
+        `;
+        resultsBody.appendChild(row);
+    });
+}
+
+// Debug function to check storage status
+function checkStorageStatus() {
+    console.log('=== STORAGE STATUS ===');
+    console.log('localStorage supported:', isLocalStorageSupported());
+    console.log('Temporary results count:', temporaryResults.length);
+    
+    if (isLocalStorageSupported()) {
+        try {
+            const stored = JSON.parse(localStorage.getItem('quizResults')) || [];
+            console.log('localStorage results count:', stored.length);
+            console.log('localStorage results:', stored);
+        } catch (error) {
+            console.error('Error reading localStorage:', error);
+        }
+    }
+}
+
+// Call this on page load to check status
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded - checking storage...');
+    checkStorageStatus();
 });
