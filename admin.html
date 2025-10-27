@@ -23,7 +23,6 @@
                     </div>
                     <button type="submit">ඇතුල් වන්න</button>
                 </form>
-                <!-- admin-info කොටස අයින් කර ඇත -->
                 <div class="back-link">
                     <a href="index.html">ප්‍රශ්නෝත්තරයට ආපසු</a>
                 </div>
@@ -56,7 +55,9 @@
                 <div class="admin-actions">
                     <button onclick="viewResults()" class="btn-secondary">ප්‍රතිඵල නැරඹීම</button>
                     <button onclick="loadResults()">ලකුණු නැවත පූරණය කරන්න</button>
-                    <button onclick="clearAllResults()">සියලු ලකුණු මකන්න</button>
+                    <button onclick="exportAllResults()" class="btn-download">සියලු ප්‍රතිඵල බාගන්න</button>
+                    <button onclick="importResults()" class="btn-import">ප්‍රතිඵල ආයාත කරන්න</button>
+                    <button onclick="clearAllResults()" class="btn-delete">සියලු ලකුණු මකන්න</button>
                     <button onclick="logout()">පිටවීම</button>
                 </div>
                 
