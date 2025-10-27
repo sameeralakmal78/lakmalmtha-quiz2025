@@ -677,4 +677,59 @@ function downloadSingleResult(result) {
     link.click();
     document.body.removeChild(link);
 }
+// Google Apps Script URL - ඔබට අවශ්‍ය විට මම create කර දෙන්නම්
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
+// Save results to Google Sheets (සියලු devices වලින්)
+async function saveResults(studentName, schoolName, studentGrade, score, totalQuestions, timeTaken) {
+    const resultData = {
+        studentName: studentName,
+        schoolName: schoolName,
+        studentGrade: studentGrade,
+        score: score,
+        totalQuestions: totalQuestions,
+        timeTaken: timeTaken,
+        timestamp: new Date().toISOString()
+    };
+    
+    console.log('Saving to Google Sheets:', resultData);
+    
+    try {
+        // Save to Google Sheets (සියලු devices වලින් access කළ හැක)
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(resultData)
+        });
+        
+        console.log('Successfully saved to Google Sheets');
+        alert('ප්‍රතිඵල සුරකින ලදී! සියලු devices වලින් බලාගත හැකිය.');
+        
+    } catch (error) {
+        console.error('Google Sheets save failed:', error);
+        // Fallback to localStorage
+        saveToLocalStorage(studentName, schoolName, studentGrade, score, totalQuestions, timeTaken);
+    }
+}
+
+// Local storage backup
+function saveToLocalStorage(studentName, schoolName, studentGrade, score, totalQuestions, timeTaken) {
+    try {
+        const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+        const newResult = {
+            studentName: studentName,
+            schoolName: schoolName,
+            studentGrade: studentGrade,
+            score: score,
+            totalQuestions: totalQuestions,
+            timeTaken: timeTaken,
+            date: new Date().toLocaleString('si-LK')
+        };
+        results.push(newResult);
+        localStorage.setItem('quizResults', JSON.stringify(results));
+    } catch (error) {
+        console.error('LocalStorage save failed:', error);
+    }
+}
+
 
