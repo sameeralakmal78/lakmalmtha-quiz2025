@@ -731,5 +731,37 @@ function saveToLocalStorage(studentName, schoolName, studentGrade, score, totalQ
         console.error('LocalStorage save failed:', error);
     }
 }
+// Save results function - CSV download රහිත
+function saveResults(studentName, schoolName, studentGrade, score, totalQuestions, timeTaken) {
+    const result = {
+        studentName: studentName,
+        schoolName: schoolName,
+        studentGrade: studentGrade,
+        score: score,
+        totalQuestions: totalQuestions,
+        timeTaken: timeTaken,
+        date: new Date().toLocaleString('si-LK')
+    };
+    
+    console.log('Saving result:', result);
+    
+    // Save to localStorage (මෙම device එකට පමණි)
+    saveToLocalStorage(result);
+    
+    // Success message
+    alert('✅ ප්‍රශ්නෝත්තරය සම්පූර්ණ! ප්‍රතිඵල පරිපාලක පුවරුවේ බලාගත හැකිය.');
+}
+
+function saveToLocalStorage(result) {
+    try {
+        const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+        results.push(result);
+        localStorage.setItem('quizResults', JSON.stringify(results));
+        console.log('Saved to localStorage');
+    } catch (error) {
+        console.error('LocalStorage save failed:', error);
+    }
+}
+
 
 
