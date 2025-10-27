@@ -631,3 +631,50 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Page loaded - checking storage...');
     checkStorageStatus();
 });
+// ==================== ENHANCED STORAGE SOLUTION ====================
+
+// Enhanced save function that works on all devices
+function saveResults(studentName, schoolName, studentGrade, score, totalQuestions, timeTaken) {
+    const result = {
+        studentName: studentName,
+        schoolName: schoolName,
+        studentGrade: studentGrade,
+        score: score,
+        totalQuestions: totalQuestions,
+        timeTaken: timeTaken,
+        date: new Date().toLocaleString('si-LK')
+    };
+    
+    console.log('Saving result:', result);
+    
+    // Save to localStorage (මෙම device එකට පමණි)
+    saveToLocalStorage(result);
+    
+    // Download as CSV (optional)
+    downloadSingleResult(result);
+}
+
+function saveToLocalStorage(result) {
+    try {
+        const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+        results.push(result);
+        localStorage.setItem('quizResults', JSON.stringify(results));
+        console.log('Saved to localStorage');
+    } catch (error) {
+        console.error('LocalStorage save failed:', error);
+    }
+}
+
+function downloadSingleResult(result) {
+    const csvContent = "සිසුවාගේ නම,පාසල,ශ්‍රේණිය,ලකුණු,කාලය,දිනය\n" +
+        `${result.studentName},${result.schoolName},${result.studentGrade},${result.score}/${result.totalQuestions},${result.timeTaken},${result.date}`;
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `math_quiz_${result.studentName}_${new Date().getTime()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
