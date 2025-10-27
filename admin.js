@@ -641,5 +641,151 @@ async function loadResults() {
         displayResultsInTable(results, resultsBody);
     }
 }
+// Combined results from all devices
+let allCombinedResults = [];
+
+// Load results function
+function loadResults() {
+    console.log('Loading results...');
+    
+    const resultsBody = document.getElementById('results-body');
+    if (!resultsBody) return;
+    
+    resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">ප්‍රතිඵල ලබාගනිමින්...</td></tr>';
+    
+    try {
+        // Load from localStorage (මෙම device එකේ ප්‍රතිඵල)
+        const localResults = JSON.parse(localStorage.getItem('quizResults')) || [];
+        
+        // Combine with imported results
+        const allResults = [...allCombinedResults, ...localResults];
+        
+        // Remove duplicates
+        const uniqueResults = removeDuplicates(allResults);
+        
+        displayResultsInTable(uniqueResults, resultsBody);
+        
+    } catch (error) {
+        console.error('Error loading results:', error);
+        resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">දත්ත ලබාගැනීමේ දෝෂයකි</td></tr>';
+    }
+}
+
+function removeDuplicates(results) {
+    const unique = [];
+    const seen = new Set();
+    
+    results.forEach(result => {
+        const key = `${result.studentName}-${result.schoolName}-${result.date}-${result.score}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            unique.push(result);
+        }
+    });
+    
+    return unique;
+}
+
+// Import results from CSV files (සියලු devices වල ප්‍රතිඵල එකතු කිරීමට)
+function importResults() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    input.multiple = true;
+    
+    input.onchange = function(event) {
+        const files = event.target.files;
+        let importedCount = 0;
+        
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    const results = parseCSV(content);
+                    allCombinedResults = [...allCombinedResults, ...results];
+                    importedCount += results.length;
+                    
+                    if (importedCount > 0) {
+                        alert(`✅ ප්‍රතිඵල ${importedCount}ක් ආයාත කෙරිණි!`);
+                        loadResults(); // ප්‍රතිඵල යාවත්කාලීන කරන්න
+                    }
+                } catch (error) {
+                    console.error('Error parsing CSV:', error);
+                    alert('❌ දත්ත ආයාත කිරීමට අසමත් විය!');
+                }
+            };
+            reader.readAsText(file);
+        });
+    };
+    
+    input.click();
+}
+
+function parseCSV(csvContent) {
+    const lines = csvContent.split('\n');
+    const results = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const values = line.split(',');
+        if (values.length >= 6) {
+            const [studentName, schoolName, studentGrade, scoreStr, timeTaken, date] = values;
+            
+            const score = parseInt(scoreStr.split('/')[0]) || 0;
+            
+            results.push({
+                studentName: studentName || 'නොමැත',
+                schoolName: schoolName || 'නොමැත',
+                studentGrade: studentGrade || 'නොමැත',
+                score: score,
+                totalQuestions: 20,
+                timeTaken: timeTaken || '00:00',
+                date: date || 'නොමැත'
+            });
+        }
+    }
+    
+    return results;
+}
+
+// Export current results (optional)
+function exportAllResults() {
+    const localResults = JSON.parse(localStorage.getItem('quizResults')) || [];
+    const allResults = [...allCombinedResults, ...localResults];
+    const uniqueResults = removeDuplicates(allResults);
+    
+    if (uniqueResults.length === 0) {
+        alert('බාගත කිරීමට ප්‍රතිඵල නොමැත!');
+        return;
+    }
+    
+    let csvContent = "සිසුවාගේ නම,පාසල,ශ්‍රේණිය,ලකුණු,කාලය,දිනය\n";
+    
+    uniqueResults.forEach((result) => {
+        const row = [
+            result.studentName || 'නොමැත',
+            result.schoolName || 'නොමැත',
+            result.studentGrade || 'නොමැත',
+            `${result.score}/${result.totalQuestions}`,
+            result.timeTaken || '00:00',
+            result.date || 'නොමැත'
+        ].join(',');
+        csvContent += row + "\n";
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `math_quiz_results.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    alert(`ප්‍රතිඵල ${uniqueResults.length}ක් බාගත කෙරිණි!`);
+}
+
 
 
