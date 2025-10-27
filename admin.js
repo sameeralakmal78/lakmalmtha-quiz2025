@@ -2,6 +2,22 @@
 const ADMIN_USERNAME = "sameeramlk";
 const ADMIN_PASSWORD = "19931996";
 
+// Temporary in-memory storage (page refresh වලදී අහිමි වේ)
+let temporaryResults = [];
+
+// localStorage support check
+function isLocalStorageSupported() {
+    try {
+        const test = 'test';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch (e) {
+        console.error('localStorage not supported:', e);
+        return false;
+    }
+}
+
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
     const adminLoginForm = document.getElementById('adminLoginForm');
@@ -37,19 +53,43 @@ function adminLogin() {
     }
 }
 
-// ප්‍රතිඵල පූරණය කිරීම
+// Enhanced loadResults function for admin page
 function loadResults() {
-    const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+    let results = [];
+    
+    console.log('Loading results from admin.js...');
+    
+    // Try localStorage first
+    if (isLocalStorageSupported()) {
+        try {
+            results = JSON.parse(localStorage.getItem('quizResults')) || [];
+            console.log('Results loaded from localStorage:', results.length);
+        } catch (error) {
+            console.warn('localStorage load failed, using temporary storage');
+            results = temporaryResults;
+        }
+    } else {
+        console.warn('localStorage not supported, using temporary storage');
+        results = temporaryResults;
+    }
+    
     const resultsBody = document.getElementById('results-body');
+    if (!resultsBody) {
+        console.error('results-body element not found');
+        return;
+    }
     
     resultsBody.innerHTML = '';
     
     if (results.length === 0) {
         resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">ප්‍රතිඵල නොමැත</td></tr>';
+        console.log('No results found');
         return;
     }
     
-    // ප්‍රතිඵල ලැයිස්තුව පෙන්වන්න
+    console.log('Displaying results:', results);
+    
+    // Display results
     results.forEach((result, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -67,7 +107,13 @@ function loadResults() {
 // සියලු ප්‍රතිඵල මකාදැමීම
 function clearAllResults() {
     if (confirm('ඔබට සියලු ප්‍රතිඵල මැකීමට අවශ්‍යද? මෙය ආපසු හැරවිය නොහැක!')) {
-        localStorage.removeItem('quizResults');
+        // Clear localStorage
+        if (isLocalStorageSupported()) {
+            localStorage.removeItem('quizResults');
+        }
+        // Clear temporary storage
+        temporaryResults = [];
+        
         loadResults();
         alert('සියලු ප්‍රතිඵල මකා දමන ලදී!');
     }
@@ -400,4 +446,21 @@ function goBackToAdmin() {
     document.querySelector('.results-container').remove();
     document.querySelector('.admin-container').style.display = 'block';
     loadResults();
+}
+
+// Debug function to check storage status
+function checkStorageStatus() {
+    console.log('=== ADMIN STORAGE STATUS ===');
+    console.log('localStorage supported:', isLocalStorageSupported());
+    console.log('Temporary results count:', temporaryResults.length);
+    
+    if (isLocalStorageSupported()) {
+        try {
+            const stored = JSON.parse(localStorage.getItem('quizResults')) || [];
+            console.log('localStorage results count:', stored.length);
+            console.log('localStorage results:', stored);
+        } catch (error) {
+            console.error('Error reading localStorage:', error);
+        }
+    }
 }
